@@ -32,9 +32,18 @@ const RootLayout = () => {
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <Stack initialRouteName="index">
-        <Stack.Screen name="index" options={{ headerShown: false }} />
+      <Stack>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="+not-found" />
+        <Stack.Screen
+          name="screens/donatePage"
+          options={{
+            title: "Donate Now",
+            headerStyle: { backgroundColor: "#0A80A4" },
+            headerTintColor: "white",
+            headerTitleAlign: "center",
+          }}
+        />
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>
