@@ -57,6 +57,7 @@ export default function donatePage() {
         onChangeText={setLocation}
         style={{ borderWidth: 1, padding: 8 }}
       />
+      <View style={{ margin: 10, padding: 10 }} />
 
       <Button
         title="Submit Donation"
