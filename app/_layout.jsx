@@ -11,6 +11,8 @@ import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
+import guidePage from "./(tabs)/guidePage";
+import GuideDetail from "./screens/GuideDetail";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -39,6 +41,17 @@ const RootLayout = () => {
           name="screens/donatePage"
           options={{
             title: "Donate Now",
+            headerShown: false,
+            headerStyle: { backgroundColor: "#0A80A4" },
+            headerTintColor: "white",
+            headerTitleAlign: "center",
+          }}
+        />
+
+        <Stack.Screen
+          name="screens/GuideDetail"
+          options={{
+            title: "Human DA",
             headerStyle: { backgroundColor: "#0A80A4" },
             headerTintColor: "white",
             headerTitleAlign: "center",

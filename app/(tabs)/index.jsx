@@ -7,6 +7,9 @@ import {
   Image,
   ScrollView,
   useColorScheme,
+  Dimensions,
+  StatusBar,
+  SafeAreaView,
 } from "react-native";
 import MapView from "react-native-maps";
 import { useNavigation } from "@react-navigation/native";
@@ -19,6 +22,9 @@ import police from "../../assets/police.png";
 import firefighter from "../../assets/firefighter.png";
 import logo from "../../assets/HUMAN_DA.jpg";
 import { Colors } from "@/constants/Colors";
+import { LinearGradient } from "expo-linear-gradient";
+
+const { width } = Dimensions.get("window");
 
 const requestPermission = async () => {
   let { status } = await Location.requestForegroundPermissionsAsync();
@@ -29,10 +35,12 @@ const requestPermission = async () => {
 };
 
 const EmergencyService = ({ title, icon }) => (
-  <View style={styles.serviceItem}>
-    <Image source={icon} style={styles.serviceIcon} />
+  <TouchableOpacity style={styles.serviceItem}>
+    <View style={styles.serviceIconContainer}>
+      <Image source={icon} style={styles.serviceIcon} />
+    </View>
     <Text style={styles.serviceText}>{title}</Text>
-  </View>
+  </TouchableOpacity>
 );
 
 export default function HomeScreen() {
@@ -45,46 +53,61 @@ export default function HomeScreen() {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <Image source={logo} style={styles.logo} resizeMode="contain" />
-      </View>
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="light-content" />
+      <ScrollView>
+        <View style={styles.coverContainer}>
+          <Image source={logo} style={styles.coverImage} resizeMode="cover" />
+          <LinearGradient
+            colors={["transparent", "rgba(255,228,225,0.9)", "#FFE4E1"]}
+            style={styles.gradient}
+          />
+          <View style={styles.titleContainer}>
+            <Text style={styles.title}>HUMAN DA</Text>
+            <Text style={styles.subtitle}>Emergency Response App</Text>
+          </View>
+        </View>
 
-      <Text style={styles.sectionTitle}>Emergency Call</Text>
-      <View style={styles.servicesGrid}>
-        <EmergencyService title="Ambulance" icon={ambulance} />
-        <EmergencyService title="Hospital" icon={hospital} />
-        <EmergencyService title="Police" icon={police} />
-        <EmergencyService title="Firefighter" icon={firefighter} />
-      </View>
+        <View style={styles.content}>
+          <TouchableOpacity
+            style={[
+              styles.donateButton,
+              { backgroundColor: Colors[colorScheme ?? "light"].tint },
+            ]}
+            onPress={handleDonatePress}
+          >
+            <Ionicons
+              name="heart"
+              size={24}
+              color="white"
+              style={styles.donateIcon}
+            />
+            <Text style={styles.donateButtonText}>Donate Now</Text>
+          </TouchableOpacity>
 
-      <View style={styles.mapContainer}>
-        <MapView
-          style={styles.map}
-          initialRegion={{
-            latitude: 37.78825,
-            longitude: -122.4324,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
-          }}
-        />
-      </View>
-      <TouchableOpacity
-        style={[
-          styles.donateButton,
-          { backgroundColor: Colors[colorScheme ?? "light"].tint },
-        ]}
-        onPress={handleDonatePress}
-      >
-        <Ionicons
-          name="heart"
-          size={24}
-          color="white"
-          style={styles.donateIcon}
-        />
-        <Text style={styles.donateButtonText}>Donate Now</Text>
-      </TouchableOpacity>
-    </ScrollView>
+          <Text style={styles.sectionTitle}>Emergency Services</Text>
+          <View style={styles.servicesGrid}>
+            <EmergencyService title="Ambulance" icon={ambulance} />
+            <EmergencyService title="Hospital" icon={hospital} />
+            <EmergencyService title="Police" icon={police} />
+            <EmergencyService title="Firefighter" icon={firefighter} />
+          </View>
+
+          <Text style={styles.sectionTitle}>Your Location</Text>
+          <View style={styles.mapContainer}>
+            <MapView
+              style={styles.map}
+              initialRegion={{
+                latitude: 9.700264381904576,
+                longitude: 123.8931939503095,
+                latitudeDelta: 0.0005,
+                longitudeDelta: 0.0005,
+              }}
+            />
+          </View>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
@@ -93,88 +116,132 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#FFE4E1",
   },
-  header: {
-    padding: 20,
-    alignItems: "center",
-  },
-  logo: {
+  coverContainer: {
+    height: 250,
     width: "100%",
-    height: 60,
+    position: "relative",
   },
-  sectionTitle: {
+  coverImage: {
+    width: "100%",
+    height: "100%",
+  },
+  gradient: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: 100,
+  },
+  titleContainer: {
+    position: "absolute",
+    bottom: 20,
+    left: 20,
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: "bold",
+    color: "#FFF",
+    textShadowColor: "rgba(0, 0, 0, 0.75)",
+    textShadowOffset: { width: -1, height: 1 },
+    textShadowRadius: 10,
+  },
+  subtitle: {
+    fontSize: 18,
+    color: "#FFF",
+    textShadowColor: "rgba(0, 0, 0, 0.75)",
+    textShadowOffset: { width: -1, height: 1 },
+    textShadowRadius: 10,
+  },
+  content: {
+    padding: 20,
+  },
+  donateButton: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#FF4444",
+    padding: 15,
+    borderRadius: 25,
+    marginBottom: 20,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  donateIcon: {
+    marginRight: 10,
+  },
+  donateButtonText: {
+    color: "white",
     fontSize: 18,
     fontWeight: "bold",
-    padding: 15,
+  },
+  sectionTitle: {
+    fontSize: 22,
+    fontWeight: "bold",
+    marginBottom: 15,
+    color: "#333",
   },
   servicesGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    padding: 10,
-    justifyContent: "space-around",
+    justifyContent: "space-between",
+    marginBottom: 30,
   },
   serviceItem: {
-    width: "22%",
+    width: width / 2 - 30,
     alignItems: "center",
-    marginBottom: 15,
+    marginBottom: 20,
+    backgroundColor: "#FFF",
+    borderRadius: 15,
+    padding: 15,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  serviceIconContainer: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    backgroundColor: "#FFE4E1",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 10,
   },
   serviceIcon: {
-    width: 50,
-    height: 50,
-    marginBottom: 5,
+    width: 40,
+    height: 40,
   },
   serviceText: {
-    fontSize: 12,
+    fontSize: 14,
+    fontWeight: "bold",
     textAlign: "center",
+    color: "#333",
   },
   mapContainer: {
     height: 200,
-    margin: 15,
-    borderRadius: 10,
+    borderRadius: 15,
     overflow: "hidden",
+    marginBottom: 30,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   map: {
     flex: 1,
-  },
-  donateButton: {
-    backgroundColor: "#FF4444",
-    padding: 15,
-    margin: 15,
-    borderRadius: 25,
-    alignItems: "center",
-  },
-  donateButtonText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  bottomNav: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    padding: 15,
-    backgroundColor: "#fff",
-    alignItems: "center",
-  },
-  navItem: {
-    alignItems: "center",
-    flex: 1,
-  },
-  navIcon: {
-    width: 24,
-    height: 24,
-  },
-  navText: {
-    fontSize: 12,
-    marginTop: 5,
-    textAlign: "center",
-  },
-  navHome: {
-    backgroundColor: "#000",
-    padding: 15,
-    borderRadius: 25,
-  },
-  homeIcon: {
-    width: 24,
-    height: 24,
-    tintColor: "#fff",
   },
 });

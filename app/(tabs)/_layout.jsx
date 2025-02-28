@@ -50,7 +50,16 @@ export default function TabLayout() {
           tabBarLabel: "Guide",
         }}
       />
-
+      <Tabs.Screen
+        name="volunteerDashboardPage"
+        options={{
+          title: "Volunteer",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="body-outline" size={size || 28} color={color} />
+          ),
+          tabBarLabel: "Donation",
+        }}
+      />
       <Tabs.Screen
         name="index"
         options={{
