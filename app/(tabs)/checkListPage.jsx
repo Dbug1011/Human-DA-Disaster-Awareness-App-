@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     color: "#333",
     textAlign: "center",
-    paddingTop: 20,
+    paddingTop: 50,
   },
   listContainer: {
     paddingHorizontal: 20,

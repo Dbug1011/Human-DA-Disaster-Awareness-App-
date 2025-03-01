@@ -1,17 +1,18 @@
-import React from "react";
+"use client";
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
-  TextInput,
   TouchableOpacity,
   Image,
   SafeAreaView,
   StatusBar,
+  Dimensions,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { Feather } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 
 // Import images
 import earthquake from "../../assets/images/hazards/earthquake.png";
@@ -20,6 +21,9 @@ import hurricane from "../../assets/images/hazards/hurricane.png";
 import wildfire from "../../assets/images/hazards/wildfire.png";
 import landslide from "../../assets/images/hazards/landslide.png";
 import typhoon from "../../assets/images/hazards/typhoon.png";
+import logo from "../../assets/safe.png";
+
+const { width } = Dimensions.get("window");
 
 const hazardCategories = [
   {
@@ -78,40 +82,57 @@ const GuidePage = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFE4E1" />
+      <StatusBar barStyle="light-content" />
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View style={styles.header}>
-          <Text style={styles.title}>Emergency Guide</Text>
+        <View style={styles.coverContainer}>
+          <Image source={logo} style={styles.coverImage} resizeMode="cover" />
+          <LinearGradient
+            colors={["transparent", "rgba(255,228,225,0.9)", "#FFE4E1"]}
+            style={styles.gradient}
+          />
+          <View style={styles.titleContainer}>
+            <Text style={styles.title}>Emergency Guide</Text>
+            <Text style={styles.subtitle}>Stay Prepared, Stay Safe</Text>
+          </View>
         </View>
 
-        <View style={styles.cardsContainer}>
-          {hazardCategories.map((category) => (
-            <TouchableOpacity
-              key={category.id}
-              style={[styles.card, { backgroundColor: category.color }]}
-              onPress={() => handlePress(category)}
-            >
-              <View style={styles.cardContent}>
-                <View style={styles.cardInfo}>
-                  <Text style={styles.cardTitle}>{category.title}</Text>
-                  <View style={styles.locationContainer}>
-                    <Feather name="alert-triangle" size={12} color="#FF4444" />
-                    <Text style={styles.locationText}>{category.location}</Text>
+        <View style={styles.content}>
+          <Text style={styles.sectionTitle}>Hazard Categories</Text>
+          <View style={styles.cardsContainer}>
+            {hazardCategories.map((category) => (
+              <TouchableOpacity
+                key={category.id}
+                style={[styles.card, { backgroundColor: category.color }]}
+                onPress={() => handlePress(category)}
+              >
+                <View style={styles.cardContent}>
+                  <View style={styles.cardInfo}>
+                    <Text style={styles.cardTitle}>{category.title}</Text>
+                    <View style={styles.locationContainer}>
+                      <Feather
+                        name="alert-triangle"
+                        size={12}
+                        color="#FF4444"
+                      />
+                      <Text style={styles.locationText}>
+                        {category.location}
+                      </Text>
+                    </View>
                   </View>
+                  <TouchableOpacity style={styles.favoriteButton}>
+                    <Feather name="bookmark" size={20} color="#FF4444" />
+                  </TouchableOpacity>
                 </View>
-                <TouchableOpacity style={styles.favoriteButton}>
-                  <Feather name="bookmark" size={20} color="#FF4444" />
-                </TouchableOpacity>
-              </View>
-              <View style={styles.imageContainer}>
-                <Image
-                  source={category.image}
-                  style={styles.cardImage}
-                  resizeMode="contain"
-                />
-              </View>
-            </TouchableOpacity>
-          ))}
+                <View style={styles.imageContainer}>
+                  <Image
+                    source={category.image}
+                    style={styles.cardImage}
+                    resizeMode="contain"
+                  />
+                </View>
+              </TouchableOpacity>
+            ))}
+          </View>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -120,59 +141,75 @@ const GuidePage = () => {
 
 const styles = StyleSheet.create({
   container: {
-    top: 20,
     flex: 1,
     backgroundColor: "#FFE4E1",
   },
   scrollContent: {
     flexGrow: 1,
   },
-  header: {
-    padding: 0,
-    paddingTop: 20,
+  coverContainer: {
+    height: 250,
+    width: "100%",
+    position: "relative",
+  },
+  coverImage: {
+    width: "100%",
+    height: "100%",
+  },
+  gradient: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: 100,
+  },
+  titleContainer: {
+    position: "absolute",
+    bottom: 20,
+    left: 20,
   },
   title: {
     fontSize: 32,
     fontWeight: "bold",
-    marginBottom: 20,
-    color: "#333",
-    textAlign: "center",
+    color: "#FFF",
+    textShadowColor: "rgba(0, 0, 0, 0.75)",
+    textShadowOffset: { width: -1, height: 1 },
+    textShadowRadius: 10,
   },
-  searchContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#FFF",
-    borderRadius: 25,
-    padding: 12,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+  subtitle: {
+    fontSize: 18,
+    color: "#FFF",
+    textShadowColor: "rgba(0, 0, 0, 0.75)",
+    textShadowOffset: { width: -1, height: 1 },
+    textShadowRadius: 10,
   },
-  searchIcon: {
-    marginRight: 10,
+  content: {
+    padding: 10,
   },
-  searchInput: {
-    flex: 1,
-    fontSize: 16,
+  sectionTitle: {
+    fontSize: 22,
+    fontWeight: "bold",
+    marginBottom: 15,
     color: "#333",
   },
   cardsContainer: {
-    padding: 20,
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
   },
   card: {
-    borderRadius: 20,
+    width: width - 20,
+    borderRadius: 15,
     marginBottom: 20,
-    padding: 20,
+    padding: 15,
     elevation: 5,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 2,
     },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
   cardContent: {
     flexDirection: "row",
@@ -183,7 +220,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   cardTitle: {
-    fontSize: 24,
+    fontSize: 30,
     fontWeight: "bold",
     marginBottom: 8,
     color: "#333",
@@ -193,7 +230,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   locationText: {
-    fontSize: 14,
+    fontSize: 12,
     color: "#666",
     marginLeft: 4,
   },
@@ -203,14 +240,14 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   imageContainer: {
-    marginTop: 20,
-    height: 160,
+    marginTop: 15,
+    height: 80,
     justifyContent: "center",
     alignItems: "center",
   },
   cardImage: {
-    width: "100%",
-    height: "100%",
+    width: "80%",
+    height: "80%",
   },
 });
 

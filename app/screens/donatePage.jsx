@@ -19,6 +19,7 @@ import { useNavigation } from "@react-navigation/native";
 export default function DonatePage() {
   const [itemName, setItemName] = useState("");
   const [quantity, setQuantity] = useState("");
+  const [donorName, setDonorName] = useState("");
   const [location, setLocation] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const navigation = useNavigation();
@@ -60,6 +61,7 @@ export default function DonatePage() {
       await addDoc(collection(db, "donations"), {
         itemName,
         quantity: parseInt(quantity),
+        donorName,
         location,
         status: "Pending",
         createdAt: new Date(),
@@ -96,6 +98,21 @@ export default function DonatePage() {
             onChangeText={setItemName}
             style={styles.input}
             placeholder="Item Name"
+            placeholderTextColor="#999"
+          />
+        </View>
+        <View style={styles.inputContainer}>
+          <Feather
+            name="user"
+            size={24}
+            color="#666"
+            style={styles.inputIcon}
+          />
+          <TextInput
+            value={donorName}
+            onChangeText={setDonorName}
+            style={styles.input}
+            placeholder="Donor Name"
             placeholderTextColor="#999"
           />
         </View>

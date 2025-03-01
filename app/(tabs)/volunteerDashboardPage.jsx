@@ -161,10 +161,13 @@ export default function VolunteerDashboardPage() {
           </View>
         ) : role === "admin" && !isAdminAuthenticated ? (
           <View style={styles.adminAuthContainer}>
-            <TouchableOpacity onPress={() => navigation.goBack}>
+            <TouchableOpacity
+              style={styles.backButton}
+              onPress={() => setRole(null)}
+            >
               <Feather name="arrow-left" size={24} color="#333" />
             </TouchableOpacity>
-            <Text style={styles.title}>Admin</Text>
+            <Text style={styles.title}>Admin Authentication</Text>
             <TextInput
               style={styles.input}
               placeholder="Enter admin code"
@@ -184,7 +187,10 @@ export default function VolunteerDashboardPage() {
           <>
             <View style={styles.header}>
               <TouchableOpacity
-                onPress={() => setRole(null)}
+                onPress={() => {
+                  setRole(null);
+                  setIsAdminAuthenticated(false);
+                }}
                 style={styles.backButton}
               >
                 <Feather name="arrow-left" size={24} color="#333" />
@@ -295,12 +301,16 @@ const styles = StyleSheet.create({
     paddingTop: 20,
   },
   backButton: {
-    padding: 10,
+    padding: 5,
+    position: "absolute",
+    top: 20,
+    left: 0,
+    zIndex: 1,
   },
   headerTitle: {
     fontSize: 24,
     fontWeight: "bold",
-    marginLeft: 10,
+    marginLeft: 40,
     color: "#333",
   },
   listContent: {

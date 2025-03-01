@@ -10,6 +10,8 @@ import {
   Dimensions,
   StatusBar,
   SafeAreaView,
+  Alert,
+  Linking,
 } from "react-native";
 import MapView from "react-native-maps";
 import { useNavigation } from "@react-navigation/native";
@@ -24,6 +26,13 @@ import logo from "../../assets/HUMAN_DA.jpg";
 import { Colors } from "@/constants/Colors";
 import { LinearGradient } from "expo-linear-gradient";
 
+const emergencyNumbers = {
+  Ambulance: "09193424793",
+  Hospital: "5039636",
+  Police: "09985986414",
+  Firefighter: "5039636",
+};
+
 const { width } = Dimensions.get("window");
 
 const requestPermission = async () => {
@@ -34,8 +43,29 @@ const requestPermission = async () => {
   }
 };
 
+// Function to make a call
+const handleCall = async (phoneNumber) => {
+  if (!phoneNumber) {
+    Alert.alert("Error", "No contact number available.");
+    return;
+  }
+
+  let formattedNumber = `tel:${phoneNumber}`;
+
+  const supported = await Linking.canOpenURL(formattedNumber);
+  if (supported) {
+    await Linking.openURL(formattedNumber);
+  } else {
+    Alert.alert("Error", "This device cannot make phone calls.");
+  }
+};
+
+// Emergency Service Component with Call Functionality
 const EmergencyService = ({ title, icon }) => (
-  <TouchableOpacity style={styles.serviceItem}>
+  <TouchableOpacity
+    onPress={() => handleCall(emergencyNumbers[title])}
+    style={styles.serviceItem}
+  >
     <View style={styles.serviceIconContainer}>
       <Image source={icon} style={styles.serviceIcon} />
     </View>
@@ -100,8 +130,8 @@ export default function HomeScreen() {
               initialRegion={{
                 latitude: 9.700264381904576,
                 longitude: 123.8931939503095,
-                latitudeDelta: 0.0005,
-                longitudeDelta: 0.0005,
+                latitudeDelta: 0.01,
+                longitudeDelta: 0.01,
               }}
             />
           </View>
@@ -164,10 +194,7 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     marginBottom: 20,
     shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
@@ -200,10 +227,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     padding: 15,
     shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
@@ -233,10 +257,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     marginBottom: 30,
     shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
