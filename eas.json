@@ -6,13 +6,22 @@
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal"
-    },
-    "preview": {
+      "distribution": "internal",
       "android": {
         "buildType": "apk"
       },
-      "distribution": "internal"
+      "env": {
+        "GOOGLE_MAPS_API_KEY": "AIzaSyAlQTSnk0_srFC_ejSRaPv9-Ylli7yyxTA"
+      }
+    },
+    "preview": {
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "GOOGLE_MAPS_API_KEY": "AIzaSyAlQTSnk0_srFC_ejSRaPv9-Ylli7yyxTA"
+      }
     },
     "preview2": {
       "android": {
@@ -25,8 +34,20 @@
     "preview4": {
       "distribution": "internal"
     },
+    "local": {
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "GOOGLE_MAPS_API_KEY": "your_api_key_here"
+      },
+      "distribution": "internal"
+    },
     "production": {
-      "autoIncrement": true
+      "autoIncrement": true,
+      "env": {
+        "GOOGLE_MAPS_API_KEY": "AIzaSyAlQTSnk0_srFC_ejSRaPv9-Ylli7yyxTA"
+      }
     }
   },
   "submit": {

@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "react_app",
+    "name": "HUMAN_DA",
     "slug": "react_app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "assets/HUMAN_DA.jpg",
+    "icon": "assets/app_icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -12,8 +12,11 @@
       "supportsTablet": true
     },
     "android": {
+      "config": {
+        "googleMaps": { "apiKey": "AIzaSyAlQTSnk0_srFC_ejSRaPv9-Ylli7yyxTA" }
+      },
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "assets/app_icon.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.dbug1011.react_app"
