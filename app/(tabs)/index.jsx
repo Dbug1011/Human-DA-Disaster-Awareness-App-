@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useRef } from "react";
+"use client";
+
+import { useState, useEffect, useRef } from "react";
 import {
   View,
-  ImageBackground,
   StyleSheet,
   Dimensions,
   Animated,
@@ -10,16 +11,17 @@ import {
   TouchableOpacity,
   Alert,
   ScrollView,
+  TextInput,
   SafeAreaView,
   StatusBar,
+  Modal,
   Image,
   useColorScheme,
 } from "react-native";
 import * as Location from "expo-location";
-import { useNavigation } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import MapView from "react-native-maps";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, Feather } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { Colors } from "@/constants/Colors";
 
@@ -29,21 +31,21 @@ import police from "../../assets/police.png";
 import firefighter from "../../assets/firefighter.png";
 import logo from "../../assets/HUMAN_DA.jpg";
 
-const emergencyNumbers = {
-  Ambulance: "09193424793",
-  Hospital: "5039636",
-  Police: "09985986414",
-  Firefighter: "5039636",
-};
-
 const { width } = Dimensions.get("window");
 
 export default function HomeScreen() {
-  const navigation = useNavigation();
   const router = useRouter();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const colorScheme = useColorScheme();
   const [location, setLocation] = useState(null);
+  const [emergencyContacts, setEmergencyContacts] = useState([
+    { name: "Ambulance", phone: "09193424793", icon: ambulance },
+    { name: "Hospital", phone: "5039636", icon: hospital },
+    { name: "Police", phone: "09985986414", icon: police },
+    { name: "Firefighter", phone: "5039636", icon: firefighter },
+  ]);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [newContact, setNewContact] = useState({ name: "", phone: "" });
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -51,14 +53,13 @@ export default function HomeScreen() {
       duration: 1000,
       useNativeDriver: true,
     }).start();
-
     (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
+      const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
         Alert.alert("Permission Denied", "Location permission is required.");
         return;
       }
-      let currentLocation = await Location.getCurrentPositionAsync({});
+      const currentLocation = await Location.getCurrentPositionAsync({});
       setLocation(currentLocation.coords);
     })();
   }, [fadeAnim]);
@@ -87,14 +88,28 @@ export default function HomeScreen() {
     router.push("/screens/donatePage");
   };
 
-  const EmergencyService = ({ title, icon }) => (
+  const addEmergencyContact = () => {
+    if (!newContact.name || !newContact.phone) {
+      Alert.alert("Error", "Please fill in all fields.");
+      return;
+    }
+    setEmergencyContacts([...emergencyContacts, { ...newContact, icon: null }]);
+    setNewContact({ name: "", phone: "" });
+    setModalVisible(false);
+  };
+
+  const EmergencyService = ({ title, icon, phone }) => (
     <TouchableOpacity
-      onPress={() => handleCall(emergencyNumbers[title])}
-      onLongPress={() => handleSendSMS(emergencyNumbers[title])}
+      onPress={() => handleCall(phone)}
+      onLongPress={() => handleSendSMS(phone)}
       style={styles.serviceItem}
     >
       <View style={styles.serviceIconContainer}>
-        <Image source={icon} style={styles.serviceIcon} />
+        {icon ? (
+          <Image source={icon} style={styles.serviceIcon} />
+        ) : (
+          <Text style={styles.iconText}>{title[0].toUpperCase()}</Text>
+        )}
       </View>
       <Text style={styles.serviceText}>{title}</Text>
     </TouchableOpacity>
@@ -103,7 +118,7 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" />
-      <ScrollView>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
         <Animated.View style={[styles.coverContainer, { opacity: fadeAnim }]}>
           <Image source={logo} style={styles.coverImage} resizeMode="cover" />
           <LinearGradient
@@ -135,11 +150,22 @@ export default function HomeScreen() {
 
           <Text style={styles.sectionTitle}>Emergency Services</Text>
           <View style={styles.servicesGrid}>
-            <EmergencyService title="Ambulance" icon={ambulance} />
-            <EmergencyService title="Hospital" icon={hospital} />
-            <EmergencyService title="Police" icon={police} />
-            <EmergencyService title="Firefighter" icon={firefighter} />
+            {emergencyContacts.map((contact, index) => (
+              <EmergencyService
+                key={index}
+                title={contact.name}
+                icon={contact.icon}
+                phone={contact.phone}
+              />
+            ))}
           </View>
+          <TouchableOpacity
+            style={styles.addButton}
+            onPress={() => setModalVisible(true)}
+          >
+            <Feather name="plus-circle" size={24} color="#FF4444" />
+            <Text style={styles.addButtonText}>Add Contact</Text>
+          </TouchableOpacity>
 
           <Text style={styles.sectionTitle}>Your Location</Text>
           <View style={styles.mapContainer}>
@@ -156,6 +182,43 @@ export default function HomeScreen() {
           </View>
         </View>
       </ScrollView>
+
+      <Modal visible={modalVisible} animationType="slide" transparent>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Add Emergency Contact</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Contact Name"
+              value={newContact.name}
+              onChangeText={(text) =>
+                setNewContact({ ...newContact, name: text })
+              }
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Phone Number"
+              keyboardType="phone-pad"
+              value={newContact.phone}
+              onChangeText={(text) =>
+                setNewContact({ ...newContact, phone: text })
+              }
+            />
+            <TouchableOpacity
+              style={styles.saveButton}
+              onPress={addEmergencyContact}
+            >
+              <Text style={styles.saveButtonText}>Save</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => setModalVisible(false)}
+            >
+              <Feather name="x" size={24} color="#333" />
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -164,6 +227,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#FFE4E1",
+  },
+  scrollContent: {
+    flexGrow: 1,
   },
   coverContainer: {
     height: 250,
@@ -236,7 +302,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "space-between",
-    marginBottom: 30,
+    marginBottom: 20,
   },
   serviceItem: {
     width: width / 2 - 30,
@@ -247,9 +313,9 @@ const styles = StyleSheet.create({
     padding: 15,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
+    shadowOpacity: 0.1,
     shadowRadius: 3.84,
-    elevation: 5,
+    elevation: 3,
   },
   serviceIconContainer: {
     width: 70,
@@ -264,11 +330,28 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
   },
+  iconText: {
+    fontSize: 28,
+    fontWeight: "bold",
+    color: "#FF4444",
+  },
   serviceText: {
     fontSize: 14,
     fontWeight: "bold",
     textAlign: "center",
     color: "#333",
+  },
+  addButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 20,
+  },
+  addButtonText: {
+    marginLeft: 10,
+    fontSize: 16,
+    color: "#FF4444",
+    fontWeight: "bold",
   },
   mapContainer: {
     height: 200,
@@ -277,11 +360,55 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
+    shadowOpacity: 0.1,
     shadowRadius: 3.84,
-    elevation: 5,
+    elevation: 3,
   },
   map: {
     flex: 1,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContent: {
+    backgroundColor: "#FFF",
+    borderRadius: 20,
+    padding: 20,
+    width: "80%",
+    alignItems: "center",
+  },
+  modalTitle: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 20,
+    color: "#333",
+  },
+  input: {
+    width: "100%",
+    height: 40,
+    borderColor: "#DDD",
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    marginBottom: 15,
+  },
+  saveButton: {
+    backgroundColor: "#FF4444",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+  },
+  saveButtonText: {
+    color: "#FFF",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  closeButton: {
+    position: "absolute",
+    top: 10,
+    right: 10,
   },
 });
